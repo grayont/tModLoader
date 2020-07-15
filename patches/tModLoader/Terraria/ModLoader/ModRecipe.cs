@@ -171,7 +171,7 @@ namespace Terraria.ModLoader
 		/// Marks the recipe as an alchemy recipe. This makes it require an alchemy table, and gives a 1/3 chance for each ingredient to not be consumed. See https://terraria.gamepedia.com/Alchemy_Table.
 		/// </summary>
 		public ModRecipe IsAlchemy() {
-			alchemy = true;
+			// alchemy = true;
 
 			return this;
 		}
@@ -229,12 +229,12 @@ namespace Terraria.ModLoader
 			if (createItem == null || createItem.type == 0)
 				throw new RecipeException("A recipe without any result has been added.");
 			
-			for (int k = 0; k < maxRequirements; k++) {
-				if (requiredTile[k] == TileID.Bottles) {
-					alchemy = true;
-					break;
-				}
-			}
+			// for (int k = 0; k < maxRequirements; k++) {
+			// 	if (requiredTile[k] == TileID.Bottles) {
+			// 		alchemy = true;
+			// 		break;
+			// 	}
+			// }
 
 			if (numRecipes >= maxRecipes) {
 				maxRecipes += 500;

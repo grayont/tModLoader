@@ -186,7 +186,7 @@ namespace Terraria.ModLoader
 		/// </summary>
 		/// <param name="needWater">Whether the recipe needs water.</param>
 		public void SetNeedWater(bool needWater) {
-			recipe.needWater = needWater;
+			// recipe.needWater = needWater;
 		}
 
 		/// <summary>
@@ -194,7 +194,7 @@ namespace Terraria.ModLoader
 		/// </summary>
 		/// <param name="needLava">Whether the recipe needs lava.</param>
 		public void SetNeedLava(bool needLava) {
-			recipe.needLava = needLava;
+			// recipe.needLava = needLava;
 		}
 
 		/// <summary>
@@ -202,7 +202,7 @@ namespace Terraria.ModLoader
 		/// </summary>
 		/// <param name="needHoney">Whether the recipe needs honey.</param>
 		public void SetNeedHoney(bool needHoney) {
-			recipe.needHoney = needHoney;
+			// recipe.needHoney = needHoney;
 		}
 
 		/// <summary>

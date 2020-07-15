@@ -16,14 +16,17 @@ namespace Terraria
 		public sealed class Condition : ICondition
 		{
 			#region Conditions
-
 			//Liquids
 			public static readonly Condition NearWater = new Condition(NetworkText.FromKey("RecipeConditions.NearWater"), _ => Main.LocalPlayer.adjWater);
 			public static readonly Condition NearLava = new Condition(NetworkText.FromKey("RecipeConditions.NearLava"), _ => Main.LocalPlayer.adjLava);
+
 			public static readonly Condition NearHoney = new Condition(NetworkText.FromKey("RecipeConditions.NearHoney"), _ => Main.LocalPlayer.adjHoney);
+
 			//Time
 			public static readonly Condition TimeDay = new Condition(NetworkText.FromKey("RecipeConditions.TimeDay"), _ => Main.dayTime);
+
 			public static readonly Condition TimeNight = new Condition(NetworkText.FromKey("RecipeConditions.TimeNight"), _ => !Main.dayTime);
+
 			//Biomes
 			public static readonly Condition InDungeon = new Condition(NetworkText.FromKey("RecipeConditions.InDungeon"), _ => Main.LocalPlayer.ZoneDungeon);
 			public static readonly Condition InCorrupt = new Condition(NetworkText.FromKey("RecipeConditions.InCorrupt"), _ => Main.LocalPlayer.ZoneCorrupt);
@@ -56,7 +59,6 @@ namespace Terraria
 			public static readonly Condition InGemCave = new Condition(NetworkText.FromKey("RecipeConditions.InGemCave"), _ => Main.LocalPlayer.ZoneGemCave);
 			public static readonly Condition InLihzhardTemple = new Condition(NetworkText.FromKey("RecipeConditions.InLihzardTemple"), _ => Main.LocalPlayer.ZoneLihzhardTemple);
 			public static readonly Condition InGraveyardBiome = new Condition(NetworkText.FromKey("RecipeConditions.InGraveyardBiome"), _ => Main.LocalPlayer.ZoneGraveyard);
-
 			#endregion
 
 			private readonly NetworkText DescriptionText;
