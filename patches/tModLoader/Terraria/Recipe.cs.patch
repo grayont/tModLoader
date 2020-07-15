@@ -1,6 +1,6 @@
 --- src/Terraria/Terraria/Recipe.cs
 +++ src/tModLoader/Terraria/Recipe.cs
-@@ -1,8 +_,13 @@
+@@ -1,12 +_,17 @@
 +using Newtonsoft.Json;
  using System;
  using System.Collections.Generic;
@@ -14,6 +14,11 @@
  
  namespace Terraria
  {
+-	public class Recipe
++	public partial class Recipe
+ 	{
+ 		public static int maxRequirements = 15;
+ 		public static int maxRecipes = 3000;
 @@ -30,14 +_,12 @@
  		private static bool _hasDelayedFindRecipes;
  
@@ -25529,12 +25534,12 @@
 +
 +			if (ModLoaderMod.Instance == null) return;
 +			
-+			List<RecipeData> recipes = JsonConvert.DeserializeObject<List<RecipeData>>(File.ReadAllText(@"C:\Users\Itorius\Desktop\recipes.json"));
++			List<RecipeData> recipes = JsonConvert.DeserializeObject<List<RecipeData>>(File.ReadAllText(@"recipes.json"));
 +
 +			foreach (RecipeData data in recipes) {
 +				if (data.createItem.type <= 0 || data.createItem.stack <= 0) continue;
 +				
-+				ModRecipe recipe = ModLoaderMod.Instance.CreateRecipe(data.createItem.type, data.createItem.stack);
++				ModRecipe recipe = ModRecipe.Create(null, data.createItem.type, data.createItem.stack);
 +
 +				foreach (RecipeData.ItemData itemData in data.requiredItem) {
 +					if (itemData.type <= 0) continue;
@@ -25546,11 +25551,11 @@
 +					recipe.AddTile(tile);
 +				}
 +
-+				if (data.needGraveyardBiome) recipe.AddCondition(NetworkText.FromLiteral("NeedsGraveyardBiome"), _ => Main.LocalPlayer.ZoneGraveyard);
-+				if (data.needSnowBiome) recipe.AddCondition(NetworkText.FromLiteral("NeedsSnowBiome"), _ => Main.LocalPlayer.ZoneSnow);
-+				if (data.needWater) recipe.AddCondition(NetworkText.FromLiteral("NeedsWater"), _ => Main.LocalPlayer.adjWater);
-+				if (data.needLava) recipe.AddCondition(NetworkText.FromLiteral("NeedsLava"), _ => Main.LocalPlayer.adjLava);
-+				if (data.needHoney) recipe.AddCondition(NetworkText.FromLiteral("NeedsHoney"), _ => Main.LocalPlayer.adjHoney);
++				if (data.needGraveyardBiome) recipe.AddCondition(Condition.InGraveyardBiome);
++				if (data.needSnowBiome) recipe.AddCondition(Condition.InSnow);
++				if (data.needWater) recipe.AddCondition(Condition.NearWater);
++				if (data.needLava) recipe.AddCondition(Condition.NearLava);
++				if (data.needHoney) recipe.AddCondition(Condition.NearHoney);
 +
 +				if (data.alchemy)
 +					recipe.AddConsumeItemCallback((_, type, num) => {

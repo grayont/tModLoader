@@ -28,13 +28,15 @@ namespace ExampleMod.Content.Items
 			
 			
 			
-			CreateRecipe(100)
-				.AddIngredient(ItemID.DirtBlock, 10)
+			CreateRecipe(1000)
+				.AddIngredient(ItemID.DirtBlock)
 				.AddCondition(Recipe.Condition.TimeDay)
-				.AddCondition(Recipe.Condition.InCrimson)
 				.Register();
 			
-			
+			CreateRecipe(100)
+				.AddIngredient(ItemID.DirtBlock)
+				.AddCondition(Recipe.Condition.TimeNight)
+				.Register();
 			
 			
 			
@@ -49,11 +51,11 @@ namespace ExampleMod.Content.Items
 			//////////////////////////////////////////////////////////////////////////
 
 			//This creates a new ModRecipe, associated with the mod that this content piece comes from.
-			var recipe = CreateRecipe(100);
-			//This adds a requirement of 1 dirt block to the recipe.
-			recipe.AddIngredient(ItemID.DirtBlock);
-			//When you're done, call this to register the recipe.
-			recipe.Register();
+			// var recipe = CreateRecipe(100);
+			// //This adds a requirement of 1 dirt block to the recipe.
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// //When you're done, call this to register the recipe.
+			// recipe.Register();
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//The following recipe showcases and explains all methods (functions) present on ModRecipe, and uses an 'advanced' style called 'chaining'.//
