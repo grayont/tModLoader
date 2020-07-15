@@ -12,15 +12,16 @@ namespace Terraria.ModLoader
 	public sealed class ModRecipe : Recipe
 	{
 		public readonly Mod mod;
-		public readonly IReadOnlyDictionary<NetworkText, Func<ModRecipe, bool>> Conditions;
-
-		private readonly Dictionary<NetworkText, Func<ModRecipe, bool>> ConditionHooks;
+		public readonly List<Condition> Conditions;
 
 		private int numIngredients = 0;
 		private int numTiles = 0;
-
-		internal Action<ModRecipe, Item> OnCraftHooks { get; private set; }
-		internal Func<ModRecipe, int, int, int> ConsumeItemHooks { get; private set; }
+		
+		public delegate void OnCraftCallback(ModRecipe recipe, Item item);
+		public delegate int ConsumeItemCallback(ModRecipe recipe, int type, int amount);
+		
+		internal OnCraftCallback OnCraftHooks { get; private set; }
+		internal ConsumeItemCallback ConsumeItemHooks { get; private set; }
 
 		/// <summary>
 		/// The index of the recipe in the Main.recipe array.
@@ -30,7 +31,7 @@ namespace Terraria.ModLoader
 		private ModRecipe(Mod mod) {
 			this.mod = mod;
 
-			Conditions = ConditionHooks = new Dictionary<NetworkText, Func<ModRecipe, bool>>();
+			Conditions = new List<Condition>();
 		}
 
 		/// <summary>
@@ -58,8 +59,7 @@ namespace Terraria.ModLoader
 		/// <param name="stack">The stack.</param>
 		/// <exception cref="RecipeException">The item " + itemName + " does not exist in mod " + mod.Name + ". If you are trying to use a vanilla item, try removing the first argument.</exception>
 		public ModRecipe AddIngredient(Mod mod, string itemName, int stack = 1) {
-			if (mod == null)
-				mod = this.mod;
+			mod ??= this.mod;
 			
 			int type = mod.ItemType(itemName);
 
@@ -145,8 +145,7 @@ namespace Terraria.ModLoader
 		/// <param name="tileName">Name of the tile.</param>
 		/// <exception cref="RecipeException">The tile " + tileName + " does not exist in mod " + mod.Name + ". If you are trying to use a vanilla tile, try using ModRecipe.AddTile(tileID).</exception>
 		public ModRecipe AddTile(Mod mod, string tileName) {
-			if (mod == null)
-				mod = this.mod;
+			mod ??= this.mod;
 
 			int type = mod.TileType(tileName);
 			
@@ -182,11 +181,20 @@ namespace Terraria.ModLoader
 		/// </summary>
 		/// <param name="condition">The predicate delegate condition.</param>
 		/// <param name="description">A description of this condition. Use NetworkText.FromKey, or NetworkText.FromLiteral for this.</param>
-		public ModRecipe AddCondition(NetworkText description, Func<ModRecipe, bool> condition) {
-			if (Conditions.ContainsKey(description))
-				throw new ArgumentException("Cannot have more than one condition with the same description.");
+		public ModRecipe AddCondition(NetworkText description, Predicate<ModRecipe> condition) => AddCondition(new Condition(description, condition));
 
-			ConditionHooks.Add(description, condition);
+		/// <summary>
+		/// Adds an array of conditions that will determine whether or not the recipe will be to be available for the player to use. The conditions can be unrelated to items or tiles (for example, biome or time).
+		/// </summary>
+		/// <param name="conditions">An array of conditions.</param>
+		public ModRecipe AddCondition(params Condition[] conditions) => AddCondition(conditions);
+
+		/// <summary>
+		/// Adds a collectiom of conditions that will determine whether or not the recipe will be to be available for the player to use. The conditions can be unrelated to items or tiles (for example, biome or time).
+		/// </summary>
+		/// <param name="conditions">A collection of conditions.</param>
+		public ModRecipe AddCondition(IEnumerable<Condition> conditions) {
+			Conditions.AddRange(conditions);
 
 			return this;
 		}
@@ -194,7 +202,7 @@ namespace Terraria.ModLoader
 		/// <summary>
 		/// Sets a callback that will allow you to make anything happen when the recipe is used to create an item.
 		/// </summary>
-		public ModRecipe AddOnCraftCallback(Action<ModRecipe, Item> callback) {
+		public ModRecipe AddOnCraftCallback(OnCraftCallback callback) {
 			OnCraftHooks += callback;
 
 			return this;
@@ -203,7 +211,7 @@ namespace Terraria.ModLoader
 		/// <summary>
 		/// Sets a callback that allows you to determine how many of a certain ingredient is consumed when this recipe is used. Return the number of ingredients that will actually be consumed. By default returns numRequired.
 		/// </summary>
-		public ModRecipe AddConsumeItemCallback(Func<ModRecipe, int, int, int> callback) {
+		public ModRecipe AddConsumeItemCallback(ConsumeItemCallback callback) {
 			ConsumeItemHooks += callback;
 
 			return this;
@@ -217,9 +225,6 @@ namespace Terraria.ModLoader
 			if (createItem == null || createItem.type == 0)
 				throw new RecipeException("A recipe without any result has been added.");
 			
-			// if (numIngredients >= maxRequirements || numTiles >= maxRequirements)
-				// throw new RecipeException($"A recipe with either too many tiles or too many ingredients has been added. {maxRequirements} is the max.");
-
 			for (int k = 0; k < maxRequirements; k++) {
 				if (requiredTile[k] == TileID.Bottles) {
 					alchemy = true;
